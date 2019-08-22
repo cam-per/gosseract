@@ -43,6 +43,8 @@ type Client struct {
 	// or when a new image is set
 	pixImage C.PixImage
 
+	oem OcrEngineMode
+
 	// Trim specifies characters to trim, which would be trimed from result string.
 	// As results of OCR, text often contains unnecessary characters, such as newlines, on the head/foot of string.
 	// If `Trim` is set, this client will remove specified characters from the result.
@@ -73,9 +75,10 @@ type Client struct {
 // NewClient construct new Client. It's due to caller to Close this client.
 func NewClient() *Client {
 	client := &Client{
-		api:       C.Create(),
-		Variables: map[SettableVariable]string{},
-		Trim:      true,
+		api:        C.Create(),
+		oem:        OEM_DEFAULT,
+		Variables:  map[SettableVariable]string{},
+		Trim:       true,
 		shouldInit: true,
 	}
 	return client
@@ -204,6 +207,11 @@ func (client *Client) SetVariable(key SettableVariable, value string) error {
 	return nil
 }
 
+// SetOEM Ocr Engine Mode
+func (client *Client) SetOEM(oem OcrEngineMode) {
+	client.oem = oem
+}
+
 // SetPageSegMode sets "Page Segmentation Mode" (PSM) to detect layout of characters.
 // See official documentation for PSM here https://github.com/tesseract-ocr/tesseract/wiki/ImproveQuality#page-segmentation-method
 // See https://github.com/otiai10/gosseract/issues/52 for more information.
@@ -250,7 +258,7 @@ func (client *Client) init() error {
 	defer C.free(unsafe.Pointer(configfile))
 
 	errbuf := [512]C.char{}
-	res := C.Init(client.api, nil, languages, configfile, &errbuf[0])
+	res := C.Init(client.api, nil, C.int(client.oem), languages, configfile, &errbuf[0])
 	msg := C.GoString(&errbuf[0])
 
 	if res != 0 {

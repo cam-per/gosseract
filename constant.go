@@ -76,3 +76,30 @@ const (
 	// https://github.com/tesseract-ocr/tesseract/issues/751
 	TESSEDIT_CHAR_BLACKLIST SettableVariable = "tessedit_char_blacklist"
 )
+
+type OcrEngineMode int
+
+const (
+	// OEM_TESSERACT_ONLY. Run Tesseract only - fastest; deprecated
+	OEM_TESSERACT_ONLY OcrEngineMode = iota
+
+	// OEM_LSTM_ONLY. Run just the LSTM line recognizer.
+	OEM_LSTM_ONLY
+
+	// OEM_TESSERACT_LSTM_COMBINED. Run the LSTM recognizer, but allow fallback
+	// to Tesseract when things get difficult.
+	// deprecated
+	OEM_TESSERACT_LSTM_COMBINED
+
+	// OEM_DEFAULT. Specify this mode when calling init_*(),
+	// to indicate that any of the above modes
+	// should be automatically inferred from the
+	// variables in the language-specific config,
+	// command-line configs, or if not specified
+	// in any of the above should be set to the
+	// default OEM_TESSERACT_ONLY.
+	OEM_DEFAULT
+
+	// OEM_COUNT. Number of OEMs
+	OEM_COUNT
+)

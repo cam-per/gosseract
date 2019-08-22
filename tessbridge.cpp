@@ -36,7 +36,7 @@ int Init(TessBaseAPI a, char* tessdataprefix, char* languages) {
   return api->Init(tessdataprefix, languages);
 }
 
-int Init(TessBaseAPI a, char* tessdataprefix, char* languages, char* configfilepath, char* errbuf) {
+int Init(TessBaseAPI a, char* tessdataprefix, int oem, char* languages, char* configfilepath, char* errbuf) {
   tesseract::TessBaseAPI * api = (tesseract::TessBaseAPI*)a;
 
   // {{{ Redirect STDERR to given buffer
@@ -51,7 +51,7 @@ int Init(TessBaseAPI a, char* tessdataprefix, char* languages, char* configfilep
   if (configfilepath != NULL) {
     char *configs[]={configfilepath};
     int configs_size = 1;
-    ret = api->Init(tessdataprefix, languages, tesseract::OEM_DEFAULT, configs, configs_size, NULL, NULL, false);
+    ret = api->Init(tessdataprefix, languages, tesseract::OcrEngineMode(oem), configs, configs_size, NULL, NULL, false);
   } else {
     ret = api->Init(tessdataprefix, languages);
   }
